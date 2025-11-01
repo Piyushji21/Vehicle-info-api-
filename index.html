@@ -442,10 +442,17 @@
                 }
             });
 
-            // Also allow pressing Enter key
+            // Enter key support - when user presses Enter in the input field
             vehicleNumberInput.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
-                    checkButton.click();
+                    const vehicleNumber = vehicleNumberInput.value.trim();
+                    
+                    if (vehicleNumber) {
+                        fetchVehicleData(vehicleNumber);
+                    } else {
+                        errorMessage.textContent = 'Please enter a vehicle registration number';
+                        errorMessage.style.display = 'block';
+                    }
                 }
             });
 
@@ -454,4 +461,4 @@
         });
     </script>
 </body>
-    </html>
+</html>
