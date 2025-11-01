@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Info Checker | Instant Vehicle Details</title>
+    <meta name="description" content="Get instant vehicle information with our fast and reliable API service">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+            color: white;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .logo i {
+            font-size: 2.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 50%;
+        }
+
+        .logo h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .input-group {
+            display: flex;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        input {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            background: var(--light);
+            font-size: 1rem;
+            outline: none;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0 25px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+        }
+
+        button i {
+            margin-right: 8px;
+        }
+
+        .result-container {
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px 0;
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--gray);
+            border-top: 5px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .vehicle-details {
+            display: none;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .detail-value {
+            color: var(--dark);
+            text-align: right;
+        }
+
+        .error-message {
+            display: none;
+            background: #fee2e2;
+            color: var(--error);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature i {
+            color: var(--success);
+            font-size: 1.2rem;
+        }
+
+        .api-info {
+            margin-top: 30px;
+        }
+
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 0 20px;
+            color: white;
+            opacity: 0.8;
+            margin-top: 40px;
+        }
+
+        .api-url {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-car"></i>
+                <h1>Vehicle Info Checker</h1>
+            </div>
+            <p class="tagline">Instant access to vehicle information with our fast and reliable API service</p>
+        </header>
+
+        <div class="main-content">
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-search"></i> Check Vehicle Details</h2>
+                <div class="form-group">
+                    <label for="vehicleNumber">Enter Vehicle Registration Number</label>
+                    <div class="input-group">
+                        <input type="text" id="vehicleNumber" placeholder="e.g. MH02FZ0555" value="MH02FZ0555">
+                        <button id="checkButton"><i class="fas fa-search"></i> Check</button>
+                    </div>
+                </div>
+
+                <div class="result-container">
+                    <div class="loading" id="loadingIndicator">
+                        <div class="loading-spinner"></div>
+                        <p>Fetching vehicle details...</p>
+                    </div>
+
+                    <div class="vehicle-details" id="vehicleDetails">
+                        <!-- Vehicle details will be populated here -->
+                    </div>
+
+                    <div class="error-message" id="errorMessage">
+                        <!-- Error message will be shown here -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title"><i class="fas fa-bolt"></i> Features</h2>
+                <div class="features">
+                    <div class="feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Instant Results</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Accurate Data</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Easy Integration</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Secure API</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>24/7 Availability</span>
+                    </div>
+                    <div class="feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>No Hidden Costs</span>
+                    </div>
+                </div>
+
+                <div class="api-info">
+                    <h2 class="card-title"><i class="fas fa-code"></i> API Usage</h2>
+                    <p>Integrate our Vehicle Info API into your applications:</p>
+                    <div class="code-block">
+                        GET https://vehicle-info.itxkaal.workers.dev/?num=VEHICLE_NUMBER
+                    </div>
+                    <p>Example:</p>
+                    <div class="code-block">
+                        fetch('https://vehicle-info.itxkaal.workers.dev/?num=MH02FZ0555')<br>
+                        &nbsp;&nbsp;.then(response => response.json())<br>
+                        &nbsp;&nbsp;.then(data => console.log(data));
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Powered by Vehicle Info API</p>
+            <div class="api-url">https://vehicle-info.itxkaal.workers.dev</div>
+            <p>&copy; 2023 Vehicle Info Checker. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const vehicleNumberInput = document.getElementById('vehicleNumber');
+            const checkButton = document.getElementById('checkButton');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const vehicleDetails = document.getElementById('vehicleDetails');
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Function to fetch vehicle data
+            async function fetchVehicleData(vehicleNumber) {
+                // Show loading indicator
+                loadingIndicator.style.display = 'block';
+                vehicleDetails.style.display = 'none';
+                errorMessage.style.display = 'none';
+
+                try {
+                    const response = await fetch(`https://vehicle-info.itxkaal.workers.dev/?num=${vehicleNumber}`);
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch vehicle data');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Hide loading indicator
+                    loadingIndicator.style.display = 'none';
+                    
+                    // Display vehicle details
+                    displayVehicleDetails(data);
+                    
+                } catch (error) {
+                    // Hide loading indicator
+                    loadingIndicator.style.display = 'none';
+                    
+                    // Show error message
+                    errorMessage.textContent = `Error: ${error.message}. Please check the vehicle number and try again.`;
+                    errorMessage.style.display = 'block';
+                }
+            }
+
+            // Function to display vehicle details
+            function displayVehicleDetails(data) {
+                // Clear previous details
+                vehicleDetails.innerHTML = '';
+                
+                // Create detail rows based on the API response structure
+                // Note: Adjust these based on the actual API response format
+                const details = [
+                    { label: 'Registration Number', value: data.registrationNumber || 'N/A' },
+                    { label: 'Owner Name', value: data.ownerName || 'N/A' },
+                    { label: 'Vehicle Model', value: data.model || 'N/A' },
+                    { label: 'Manufacturer', value: data.manufacturer || 'N/A' },
+                    { label: 'Registration Date', value: data.registrationDate || 'N/A' },
+                    { label: 'Fuel Type', value: data.fuelType || 'N/A' },
+                    { label: 'Vehicle Class', value: data.vehicleClass || 'N/A' },
+                    { label: 'Engine Number', value: data.engineNumber || 'N/A' },
+                    { label: 'Chassis Number', value: data.chassisNumber || 'N/A' },
+                    { label: 'Insurance Status', value: data.insuranceStatus || 'N/A' }
+                ];
+                
+                // Add each detail as a row
+                details.forEach(detail => {
+                    const row = document.createElement('div');
+                    row.className = 'detail-row';
+                    
+                    const label = document.createElement('span');
+                    label.className = 'detail-label';
+                    label.textContent = detail.label;
+                    
+                    const value = document.createElement('span');
+                    value.className = 'detail-value';
+                    value.textContent = detail.value;
+                    
+                    row.appendChild(label);
+                    row.appendChild(value);
+                    vehicleDetails.appendChild(row);
+                });
+                
+                // Show the vehicle details container
+                vehicleDetails.style.display = 'block';
+            }
+
+            // Event listener for the check button
+            checkButton.addEventListener('click', function() {
+                const vehicleNumber = vehicleNumberInput.value.trim();
+                
+                if (vehicleNumber) {
+                    fetchVehicleData(vehicleNumber);
+                } else {
+                    errorMessage.textContent = 'Please enter a vehicle registration number';
+                    errorMessage.style.display = 'block';
+                }
+            });
+
+            // Also allow pressing Enter key
+            vehicleNumberInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkButton.click();
+                }
+            });
+
+            // Try to fetch data for the example vehicle number on page load
+            fetchVehicleData('MH02FZ0555');
+        });
+    </script>
+</body>
+  </html>
