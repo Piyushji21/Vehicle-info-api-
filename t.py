@@ -561,7 +561,7 @@ def username1():
   except :
   	username1()
 
-for i in range(250):
+for i in range(5):
   Thread(target=username1).start()
   #8494405705:AAGik61a6DqMObHbeQ1VH-LCIHt5Ad__T38
   #7151732283
